@@ -13,16 +13,26 @@
 
 
 
+/* Scrollbar styling */
 
-.styleCard{
-      position: absolute;
-      width: 10rem;
+/* Works on Firefox */
+.styleScroll{
+	scrollbar-width: thin;
+	scrollbar-color: rgb(218, 121, 121) auto;
 }
- 
 
+/* Works on Chrome, Edge, and Safari */
+.styleScroll::-webkit-scrollbar {
+	width: 7px;
+}
 
-@for $i from 1 to 6 {
-    .styleCard:nth-child(#{$i}) {
-      left: 10px * ($i - 1);
-    }
-  }
+.styleScroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.styleScroll::-webkit-scrollbar-thumb {
+	background-color:rgb(218, 121, 121);
+    border-radius: 10px;
+}
+
+/* End scrollbar styling*/
