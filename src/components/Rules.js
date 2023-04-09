@@ -12,7 +12,7 @@ function Rules() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <div>
-      <p className="cursor-pointer font-bold text-lg " onClick={onOpen}>
+      <p className="cursor-pointer font-bold " onClick={onOpen}>
         Rules
       </p>
       <Modal isOpen={isOpen} onClose={onClose}>

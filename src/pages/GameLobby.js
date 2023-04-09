@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/img/bg-picture.jpg";
 import gameLogo from "../assets/img/gameLogo.png";
 import { useToast } from "@chakra-ui/react";
-const URL=process.env.REACT_APP_USER_API;
-
-
-
+import { request } from "../api/request";
+import { setItem } from "../utils/storage";
+import { setToast } from "../utils/taost";
 
 const GameLobby = (props) => {
   const [username, setUsername] = useState("");
@@ -14,62 +13,42 @@ const GameLobby = (props) => {
   let history = useNavigate();
   const toast = useToast();
 
-
-  
   //onclicking start game button
   const startGame = async () => {
     //if user clicks button without entering username//
     if (!username) {
-      toast({description:"Enter username to start the game",status:'warning',duration:2000,isClosable:true})
+      setToast(toast,'warning',"Enter username to start the game")
       return;
     }
 
-    try {
-      //making api call to create user with username //
-      let response = await fetch(`${URL}createUser`, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: username }),
-      });
-
-      let result = await response.json();
-      let user = result.data;
-      //setting user data with initial game values at localstorage//
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          username: user.username,
-          matchesWon: user.matchesWon,
-          defuseCards: [],
-          openedCard: "",
-          deck: [],
-        })
-      );
-      setIsLobby(false);
-      // redirecting to game play area //
-      history("/playGame");
-    } catch (error) {
-      console.log(error);
-      toast({description:"Internal server error",status:'warning',duration:2000,isClosable:true})
+    let response = await request("POST", "/createUser", { username });
+     
+    if (response.success) {
+        setItem("user", response.data);
+        setIsLobby(false);
+        history("/playGame");
     }
   };
 
-  const togglePreLoader=()=>{
-      let elem=document.getElementById('preloader');
-      elem.style.display="none"
-  }
+  const togglePreLoader = () => {
+    let elem = document.getElementById("preloader");
+    elem.style.display = "none";
+  };
 
   return (
-    <main onLoad={togglePreLoader}  className="flex w-full items-center  h-[87vh] justify-end ">
-      <div  id="preloader" className="w-full flex flex-col justify-center -space-y-6 items-center h-[100vh] absolute bg-[rgb(84,3,25)] top-0 z-20">
-           <img  src={gameLogo}></img>
-           <p className="text-2xl font-bold text-white">Exploding Kitten </p>
+    <main
+      onLoad={togglePreLoader}
+      className="flex w-full items-center  h-[87vh] justify-end "
+    >
+      <div
+        id="preloader"
+        className="w-full flex flex-col justify-center -space-y-6 items-center h-[100vh] absolute bg-[rgb(84,3,25)] top-0 z-20"
+      >
+        <img alt="logo" src={gameLogo}></img>
+        <p className="text-2xl font-bold text-white">Exploding Kitten </p>
       </div>
       <img
-        alt=""
+        alt="Background"
         className="absolute w-full h-[100vh] top-0 z-0"
         src={bgImage}
       ></img>

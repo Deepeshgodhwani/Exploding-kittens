@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUsers } from "./leaderboardSlice";
 import io from "socket.io-client";
+import { getItem } from "../../utils/storage";
+import { request } from "../../api/request";
 const ENDPOINT = "localhost:4000";
-const URL=process.env.REACT_APP_USER_API;
 var socket;
 
 const userSlice = createSlice({
@@ -35,26 +35,8 @@ export const { get_user, save_won_game } = userSlice.actions;
 
 export function getUserDetail() {
   return async function getUserDataThunk(dispatch, getstate) {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user) {
-      fetch(`${URL}updateUser/${user.username}`, {
-        method: "get",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then(async (response) => {
-          let result = await response.json();
-          dispatch(get_user(result?.data));
-        })
-        .catch((error) => {
-            console.log("Internal server error" ,error)
-        });
-    } else {
-      dispatch(get_user(user));
-    }
+    const user = getItem("user");
+    dispatch(get_user(user));
   };
 }
 
@@ -67,24 +49,15 @@ export function editUserDetail(userData) {
 
 export function updateUserPoints(userData) {
   return async function updateUserPointsThunk(dispatch, getstate) {
-    fetch(`${URL}updateUser`, {
-      method: "PUT",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: userData.username,
-        matchesWon: userData.matchesWon,
-      }),
-    })
-      .then(() => {
-        socket = io(ENDPOINT);
-        dispatch(fetchUsers());
-        socket.emit("updateLeaderBoard");
-      })
-      .catch((err) => {
-        console.log("Internal server error" ,err)
-      });
+    let reqbody = JSON.stringify({
+      username: userData.username,
+      matchesWon: userData.matchesWon,
+    });
+    let response = await request("PUT", "/updateUser", reqbody);
+
+    if (response.success) {
+      socket = io(ENDPOINT);
+      socket.emit("updateLeaderBoard");
+    }
   };
 }
