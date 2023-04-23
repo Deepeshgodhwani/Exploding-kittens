@@ -15,9 +15,6 @@ import {
 } from "../redux/slice/userSlice";
 let processComplete = true;
 
-
-
-
 const GamePlayArea = (props) => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
@@ -30,7 +27,6 @@ const GamePlayArea = (props) => {
   // game cards
   const cards = ["CAT", "DEFUSE", "SHUFFLE", "EXPLODE"];
 
-
   useEffect(() => {
     //fetching user details from local storage //
     dispatch(getUserDetail());
@@ -38,19 +34,15 @@ const GamePlayArea = (props) => {
     // eslint-disable-next-line
   }, []);
 
-
-
   useEffect(() => {
     if (!user.deck) return;
     //updating game when get user details //
     updateGameState();
   }, [user]);
 
-
-
   const updateUserState = (data) => {
     const { deck, defuseCards, openedCard, gameStatus } = data;
-     //dispatching action to update users details in local storage //
+    //dispatching action to update users details in local storage //
     dispatch(
       editUserDetail({
         username: user?.username,
@@ -80,8 +72,6 @@ const GamePlayArea = (props) => {
     updateUserState(data);
   };
 
-
-
   const updateGameState = () => {
     //to update game state on every user action //
     if (user?.deck?.length < 5 && user?.deck?.length > 0) {
@@ -99,7 +89,6 @@ const GamePlayArea = (props) => {
     }
   };
 
-
   // to generate random deck
   const generateRandomDeck = () => {
     //to generate 5 random numbers from 0 to 3
@@ -108,10 +97,10 @@ const GamePlayArea = (props) => {
     const c3 = Math.floor(Math.random() * 4);
     const c4 = Math.floor(Math.random() * 4);
     const c5 = Math.floor(Math.random() * 4);
-    
+
     //making random array by putting random numbers //
     let randromDeck = [cards[c1], cards[c2], cards[c3], cards[c4], cards[c5]];
-   
+
     // filtering shuffle cards if it is more than 1
     let shuffleCount = 0;
     randromDeck = randromDeck.map((card) => {
@@ -125,37 +114,35 @@ const GamePlayArea = (props) => {
     });
     return randromDeck;
   };
- 
-  //to show message (popover) after shuffle ,game over, game won 
+
+  //to show message (popover) after shuffle ,game over, game won
   const showMessageAndReset = (msg, btnText) => {
     setPopupVisible(true);
     setPopupData({ message: msg, btnText });
   };
- 
-
 
   //to reveal cards after click card deck
   const revealCard = () => {
     if (!processComplete) return;
     processComplete = false;
 
-    //removing openedCard card from deck   
+    //removing openedCard card from deck
     let cards = [...deck];
     const poppedCard = cards.pop();
     setOpenedCard(poppedCard);
     //updating deck
     setDeck([...cards]);
 
-    //if poppedcard is shuffle card then reset deck     
+    //if poppedcard is shuffle card then reset deck
     if (poppedCard === "SHUFFLE") {
       setTimeout(() => {
         sendDataToUpdate(generateRandomDeck(), [], "", "none");
       }, 700);
       showMessageAndReset("Game Shuffled", "Continue");
-      //if popped card is cat card then just continues game 
+      //if popped card is cat card then just continues game
     } else if (poppedCard === "CAT") {
       if (!cards.length) {
-        //if there is no cards left then reseting deck and firing message 
+        //if there is no cards left then reseting deck and firing message
         //user wons
         setTimeout(() => {
           sendDataToUpdate(generateRandomDeck(), [], "", "won");
@@ -167,7 +154,7 @@ const GamePlayArea = (props) => {
       //if card is defuse card then it will be stored in defuse cards //
     } else if (poppedCard === "DEFUSE") {
       if (!cards.length) {
-        //if there is no cards left then reseting deck and firing message 
+        //if there is no cards left then reseting deck and firing message
         //user wons
         setTimeout(() => {
           sendDataToUpdate(generateRandomDeck(), [], "", "won");
@@ -179,12 +166,12 @@ const GamePlayArea = (props) => {
         setDefuseCards(updatedDefusedCard);
         sendDataToUpdate(cards, updatedDefusedCard, poppedCard, "none");
       }
-      //if card is explode 
+      //if card is explode
     } else if (poppedCard === "EXPLODE") {
-      //checking is there is defuse card or not 
+      //checking is there is defuse card or not
       if (defuseCards.length) {
         if (!cards.length) {
-          //if there is no cards left then reseting deck and firing message 
+          //if there is no cards left then reseting deck and firing message
           //user wons
           setTimeout(() => {
             sendDataToUpdate(generateRandomDeck(), [], "", "won");
@@ -207,7 +194,6 @@ const GamePlayArea = (props) => {
     }
     processComplete = true;
   };
-   
 
   //return  card src acccording to their name
   const setOpenedCardSrc = () => {
@@ -224,18 +210,19 @@ const GamePlayArea = (props) => {
     }
   };
 
-   
-  const togglePreLoader=()=>{
-    let elem=document.getElementById('preloader');
-    elem.style.display="none"
-   }
-
+  const togglePreLoader = () => {
+    let elem = document.getElementById("preloader");
+    elem.style.display = "none";
+  };
 
   return (
-    <main onLoad={togglePreLoader} className="z-40 w-full h-[89vh] py-10 xl:pt-12 px-40">
-      <div  id="preloader" className="w-full left-0 flex flex-col justify-center -space-y-6 items-center h-[100vh] absolute bg-[rgb(84,3,25)] top-0 z-20">
-           <img  src={gameLogo}></img>
-           <p className="text-2xl font-bold text-white">Exploding Kitten </p>
+    <main className="z-40 w-full h-[89vh] py-10 xl:pt-12 px-40">
+      <div
+        id="preloader"
+        className="w-full left-0 flex flex-col justify-center -space-y-6 items-center h-[100vh] absolute bg-[rgb(84,3,25)] top-0 z-20"
+      >
+        <img alt="" src={gameLogo}></img>
+        <p className="text-2xl font-bold text-white">Exploding Kitten </p>
       </div>
       {popupVisible && (
         <Popover
@@ -247,6 +234,7 @@ const GamePlayArea = (props) => {
       <img
         className="absolute w-full h-[100vh] left-0 top-0 z-0"
         src={bgImage}
+        onLoad={togglePreLoader}
         alt=""
       ></img>
       <section className="flex justify-center space-x-80 z-10 relative h-[80vh]  text-white">

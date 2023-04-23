@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import io from "socket.io-client";
 import { getItem } from "../../utils/storage";
 import { request } from "../../api/request";
+import { fetchUsers } from "./leaderboardSlice";
 const ENDPOINT = "localhost:4000";
 var socket;
 
@@ -57,6 +58,7 @@ export function updateUserPoints(userData) {
 
     if (response.success) {
       socket = io(ENDPOINT);
+      dispatch(fetchUsers());
       socket.emit("updateLeaderBoard");
     }
   };
